@@ -51,7 +51,7 @@ export class TemplateService extends BaseTemplateService {
     private _searchService: ISearchService;
 
     /**
-     * The list of available managed managed properties (managed globally for all proeprty pane fiels if needed)
+     * The list of available managed managed properties (managed globally for all proeprty pane fields if needed)
      */
     private _availableManagedProperties: IComboBoxOption[];
 
@@ -322,7 +322,7 @@ export class TemplateService extends BaseTemplateService {
         }
 
         // Set required selected properties if not present
-        let requiredProperties = ['SPSiteUrl','SiteTitle','owstaxidmetadataalltagsinfo','contentclass','Created','AuthorOWSUSER','Author','FileType','ServerRedirectedEmbedURL','DefaultEncodingURL','Path','IsContainer','IsListItem','HtmlFileType'];
+        let requiredProperties = ['SPSiteUrl','SiteTitle','owstaxidmetadataalltagsinfo','contentclass','Created','AuthorOWSUSER','Author','FileType','ServerRedirectedEmbedURL','DefaultEncodingURL','Path','IsContainer','IsListItem','HtmlFileType', 'RefinableDate01', 'CategoryOWSCHCS', 'RefinableString01', 'Location', 'ows_Location'];
         this._ensureRequiredSelectedProperties(requiredProperties, properties);
 
         if (properties.resultSourceId === PEOPLE_RESULT_SOURCEID) {
@@ -427,7 +427,7 @@ export class TemplateService extends BaseTemplateService {
         }
 
         // Set required selected properties if not present (by default we use the document card component)
-        let requiredProperties = ['SPSiteUrl','SiteTitle','owstaxidmetadataalltagsinfo','contentclass','Created','AuthorOWSUSER','Author','FileType','ServerRedirectedEmbedURL','DefaultEncodingURL','Path','IsContainer','IsListItem','HtmlFileType'];
+        let requiredProperties = ['SPSiteUrl','SiteTitle','owstaxidmetadataalltagsinfo','contentclass','Created','AuthorOWSUSER','Author','FileType','ServerRedirectedEmbedURL','DefaultEncodingURL','Path','IsContainer','IsListItem','HtmlFileType', 'RefinableDate01', 'CategoryOWSCHCS', 'RefinableString01', 'Location', 'ows_Location'];
         this._ensureRequiredSelectedProperties(requiredProperties, properties);
 
         let groupFields: IPropertyPaneField<any>[] = [

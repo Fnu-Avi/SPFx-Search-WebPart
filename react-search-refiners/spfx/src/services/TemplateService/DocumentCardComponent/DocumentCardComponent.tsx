@@ -6,12 +6,13 @@ import { PreviewType } from '../PreviewContainer/IPreviewContainerProps';
 import { Link } from 'office-ui-fabric-react/lib/Link';
 import { TemplateService } from "../TemplateService";
 import * as documentCardLocationGetStyles from 'office-ui-fabric-react/lib/components/DocumentCard/DocumentCardLocation.styles';
-import { getTheme, mergeStyleSets } from "office-ui-fabric-react/lib/Styling";
+import { getTheme, mergeStyleSets, HighContrastSelectorWhite } from "office-ui-fabric-react/lib/Styling";
 import { classNamesFunction } from "office-ui-fabric-react/lib/Utilities";
 import { IReadonlyTheme } from "@microsoft/sp-component-base";
 import { merge, trimStart, isEmpty } from '@microsoft/sp-lodash-subset';
 import { getFileTypeIconProps, FileIconType } from '@uifabric/file-type-icons';
 import { GlobalSettings } from 'office-ui-fabric-react/lib/Utilities';
+import styles from "../../../controls/TextDialog/AceEditor.module.scss";
 let globalSettings = (window as any).__globalSettings__;
 
 /**
@@ -81,7 +82,7 @@ export class DocumentCardComponent extends React.Component<IDocumentCardComponen
 
             renderPreviewCallout = <PreviewContainer
                 elementUrl={processedProps.previewUrl}
-                previewImageUrl={processedProps.previewImage}
+                previewImageUrl={processedProps.date}
                 previewType={processedProps.isVideo ? PreviewType.Video : PreviewType.Document}
                 targetElement={this.documentCardPreviewRef.current}
                 showPreview={this.state.showCallout}
@@ -111,7 +112,7 @@ export class DocumentCardComponent extends React.Component<IDocumentCardComponen
                     name: processedProps.title,
                     previewImageSrc: processedProps.previewImage,
                     imageFit: ImageFit.centerCover,
-                    iconSrc: globalSettings.icons[iconProps.iconName].code.props.src,
+                    // iconSrc: globalSettings.icons[iconProps.iconName].code.props.src,
                     width: 318,
                     height: 196,
                 }
@@ -119,20 +120,23 @@ export class DocumentCardComponent extends React.Component<IDocumentCardComponen
         };
 
         const playButtonStyles: React.CSSProperties = {
-            color: '#fff',
-            padding: '15px',
-            backgroundColor: 'gray',
+            color: '#000',
+            paddingTop: '15px',
+            paddingBottom: '15px',
+            paddingLeft: '27px',
+            paddingRight: '27px',
+            // backgroundColor: 'gray',
             left: '50%',
             top: '50%',
             transform: 'translate(-50%, -50%)',
             position: 'absolute',
             zIndex: 1,
             opacity: 0.9,
-            borderRadius: '50%',
-            borderColor: '#fff',
-            borderWidth: 4,
+            // borderRadius: '50%',
+            borderColor: '#eaeaea',
+            borderWidth: 2,
             borderStyle: 'solid',
-            display: 'flex',
+            display: 'inline-block',
         };
 
         // Get the current loaded theme
@@ -157,7 +161,34 @@ export class DocumentCardComponent extends React.Component<IDocumentCardComponen
             documentCardStyles.root["minHeight"] = '100%';
         }
 
-        return <div>
+        const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+            "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+        ];
+
+        const dayNames = [
+            "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
+        ];
+
+        function tConvert (time) {
+            // Check correct time format and split into components
+            time = time.toString ().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+            // console.log(time)
+            if (time.length > 1) { // If time format correct
+              time = time.slice (1);  // Remove full string match value
+              time[5] = +time[0] < 12 ? 'AM' : 'PM'; // Set AM/PM
+              time[0] = +time[0] % 12 || 12; // Adjust hours
+            }
+            // time = time.setHours(time.getHours()-8);
+            
+            return time.join (''); // return adjusted time or original string
+          }
+
+        const d = new Date(processedProps.date);
+        console.log(d);
+        d.setHours(d.getHours() - 8);
+        console.log(d);
+
+        return <div style= {{maxWidth: '284px'}}>
             <DocumentCard
                 onClick={() => {
                     this.setState({
@@ -168,16 +199,25 @@ export class DocumentCardComponent extends React.Component<IDocumentCardComponen
                 type={this.props.isCompact ? DocumentCardType.compact : DocumentCardType.normal}
             >
                 <div ref={this.documentCardPreviewRef} style={{ position: 'relative', height: '100%' }}>
-                    {this.props.isVideo ?
+                    <div style={playButtonStyles}>
+                        <div style={{fontSize: '20px'}} dangerouslySetInnerHTML={{ __html: monthNames[d.getMonth()] }}>
+                        </div>
+                        <div style={{fontSize: '30px', fontWeight: 500}}dangerouslySetInnerHTML={{ __html: d.getDate().toString() }}>
+                        </div>
+                        {/* <i className="ms-Icon ms-Icon--Play ms-font-xl" aria-hidden="true"></i> */}
+                    </div>
+                   
+                    {/* {this.props.isVideo ?
                         <div style={playButtonStyles}>
                             <i className="ms-Icon ms-Icon--Play ms-font-xl" aria-hidden="true"></i>
                         </div> : null
-                    }
+                    } */}
+                    
                     <DocumentCardPreview {...previewProps} />
                 </div>
                 <DocumentCardDetails>
                     {processedProps.location && !this.props.isCompact ?
-                        <div className={documentCardLocationClassNames.root} dangerouslySetInnerHTML={{ __html: processedProps.location }}></div> : null
+                        <div style={{color: '#858585', paddingBottom: '0px'}} className={documentCardLocationClassNames.root} dangerouslySetInnerHTML={{ __html: processedProps.location }}></div> : null
                     }
                     <Link href={processedProps.href} target='_blank' styles={{
                         root: {
@@ -192,16 +232,23 @@ export class DocumentCardComponent extends React.Component<IDocumentCardComponen
                             title={processedProps.title}
                             shouldTruncate={false}
                         />
+                        
                     </Link>
+                    <div style={{color: '#333333', fontSize: '12px', paddingTop: '0px', paddingBottom: '0px'}} className={documentCardLocationClassNames.root} dangerouslySetInnerHTML={{ __html: dayNames[d.getDay()] + ', ' + monthNames[d.getMonth()].charAt(0).toUpperCase() + monthNames[d.getMonth()].slice(1).toLowerCase() + ' ' + d.getDate().toString() + ', ' + tConvert(d.toLocaleTimeString(navigator.language, {hour: 'numeric', minute: '2-digit'})) }}>
+                    </div>
+                    <div style={{color: '#858585', fontSize: '12px', paddingTop: '2px'}} className={documentCardLocationClassNames.root} dangerouslySetInnerHTML={{ __html: processedProps.author }}>
+                    </div>
                     {processedProps.tags && !this.props.isCompact ?
                         <div className={documentCardLocationClassNames.root} dangerouslySetInnerHTML={{ __html: processedProps.tags }}></div> : null
                     }
-                    {processedProps.author ?
+                    {/* {processedProps.author ?
                         <DocumentCardActivity
                             activity={processedProps.date}
-                            people={[{ name: processedProps.author, profileImageSrc: processedProps.profileImage }]}
+                            people={[{ 
+                                name: processedProps.author,
+                                profileImageSrc: processedProps.profileImage }]}
                         /> : null
-                    }
+                    } */}
                 </DocumentCardDetails>
             </DocumentCard>
             {renderPreviewCallout}
