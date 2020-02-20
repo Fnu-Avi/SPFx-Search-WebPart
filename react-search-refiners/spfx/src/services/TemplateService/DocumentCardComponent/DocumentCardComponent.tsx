@@ -182,11 +182,11 @@ export class DocumentCardComponent extends React.Component<IDocumentCardComponen
             
             return time.join (''); // return adjusted time or original string
           }
-
+        console.log(processedProps)
         const d = new Date(processedProps.date);
-        console.log(d);
+        // console.log(d);
         d.setHours(d.getHours() - 8);
-        console.log(d);
+        // console.log(d);
 
         return <div style= {{maxWidth: '284px'}}>
             <DocumentCard
